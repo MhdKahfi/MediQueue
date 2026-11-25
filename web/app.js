@@ -1,0 +1,29 @@
+const $=s=>document.querySelector(s);const api=async(path,options={})=>{const r=await fetch(path,{headers:{'Content-Type':'application/json'},...options});const data=await r.json().catch(()=>({error:'Respons server tidak valid.'}));if(!r.ok)throw new Error(data.error||'Terjadi kesalahan.');return data};
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function priorityClass(n){return n===1?'p1':n===2?'p2':''}
+async function refresh(){try{const [stats,patients,history,heap]=await Promise.all([api('/api/stats'),api('/api/patients'),api('/api/history'),api('/api/heap')]);$('#total').textContent=stats.total;$('#waiting').textContent=stats.waiting;$('#served').textContent=stats.served;$('#topPriority').textContent=stats.waiting?`P${stats.topPriority}`:'—';$('#topId').textContent=stats.waiting?`ID ${stats.topId}`:'Belum ada antrean';$('#queueCount').textContent=`${patients.length} pasien menunggu`;
+$('#queueBody').innerHTML=patients.length?patients.map((p,i)=>`<tr><td>${String(i+1).padStart(2,'0')}</td><td>${esc(p.id)}</td><td>${esc(p.name)}</td><td>${p.age}</td><td><span class="priority ${priorityClass(p.priority)}">Prioritas ${p.priority}</span></td><td>${esc(p.registeredAt)}</td><td><span class="status">Menunggu</span></td></tr>`).join(''):'<tr><td colspan="7" class="empty">Belum ada pasien dalam antrean.</td></tr>';
+if(heap.length){const levels=[];heap.forEach(node=>(levels[node.level]??=[]).push(node));$('#heapView').innerHTML=levels.map((level,i)=>`<div class="heap-level">${level.map(node=>`<div class="heap-node ${node.index===0?'root':''}"><b>${esc(node.id)}</b><span>Prioritas ${node.priority}</span></div>`).join('')}</div>`).join('')}else{$('#heapView').innerHTML='<div class="empty">Heap masih kosong.</div>'}
+$('#historyList').innerHTML=history.length?history.slice().reverse().map(p=>`<div class="history-item"><div><b>${esc(p.name)} <small>(${esc(p.id)})</small></b><small>Prioritas simulasi ${p.priority} · ${esc(p.registeredAt)}</small></div><span>Dipanggil</span></div>`).join(''):'<div class="empty">Belum ada riwayat pemanggilan.</div>';
+}catch(e){$('#queueBody').innerHTML=`<tr><td colspan="7" class="empty">${esc(e.message)} Pastikan server C berjalan.</td></tr>`}}
+$('#patientForm').addEventListener('submit',async e=>{e.preventDefault();const msg=$('#formMessage');msg.className='message';msg.textContent='';try{await api('/api/patients',{method:'POST',body:JSON.stringify({id:$('#patientId').value.trim(),name:$('#patientName').value.trim(),age:Number($('#patientAge').value),priority:Number($('#patientPriority').value)})});msg.textContent='✓ Data berhasil didaftarkan.';e.target.reset();await refresh()}catch(err){msg.className='message error';msg.textContent=err.message}});
+$('#callNext').addEventListener('click',async()=>{const msg=$('#callMessage');msg.className='message';try{const d=await api('/api/call-next',{method:'POST',body:'{}'});msg.textContent=`✓ ${d.patient.name} (${d.patient.id}) berhasil dipanggil.`;await refresh()}catch(err){msg.className='message error';msg.textContent=err.message}});
+$('#refresh').addEventListener('click',refresh);
+$('#searchForm').addEventListener('submit',async e=>{e.preventDefault();const id=$('#searchId').value.trim();const out=$('#searchResult');try{const p=await api('/api/search?id='+encodeURIComponent(id));out.innerHTML=`<b>${esc(p.name)}</b> (${esc(p.id)})<br>Usia: ${p.age} tahun · Prioritas simulasi: ${p.priority}<br>Status: ${esc(p.status)}<br>Waktu daftar: ${esc(p.registeredAt)}`}catch(err){out.textContent=err.message}});
+refresh();setInterval(refresh,10000);
+
+
+// Workspace multi-halaman: setiap menu menampilkan ruang kerja tersendiri.
+(()=>{
+ const titles={dashboard:['Dashboard','Pantau dan kelola simulasi antrean pasien dalam satu tempat.'],registration:['Pendaftaran pasien','Kelola data pasien yang masuk ke simulasi antrean.'],queue:['Antrean pasien','Pantau urutan antrean dan lakukan pemanggilan pasien.'],heap:['Visualisasi Min-Heap','Lihat representasi struktur Priority Queue secara visual.'],history:['Riwayat panggilan','Tinjau daftar pasien yang telah dipanggil.'],search:['Pencarian pasien','Temukan data pasien berdasarkan ID menggunakan BST.']};
+ const move=(selector,target)=>{const el=document.querySelector(selector),mount=document.querySelector(target);if(el&&mount)mount.appendChild(el)};
+ // Pindahkan komponen yang sudah ada ke halaman workspace masing-masing tanpa mengubah ID/API.
+ move('.form-card','#registrationMount');
+ // Kartu pendaftaran berada di dalam primary-grid pada versi sebelumnya.
+ const primary=document.querySelector('.primary-grid');
+ if(primary){const reg=primary.querySelector('.registration-card'),call=primary.querySelector('.call-card');if(reg)document.querySelector('#registrationMount').appendChild(reg);if(call)document.querySelector('#callMount').appendChild(call);primary.remove();}
+ move('.queue-card','#queueMount');move('.heap-card','#heapMount');
+ const bottom=document.querySelector('.bottom-grid');if(bottom){const hist=bottom.querySelector('.history-card'),search=bottom.querySelector('.search-card');if(hist)document.querySelector('#historyMount').appendChild(hist);if(search)document.querySelector('#searchMount').appendChild(search);bottom.remove();}
+ function show(){let key=(location.hash||'#dashboard').slice(1);if(!titles[key])key='dashboard';document.querySelectorAll('.workspace-page').forEach(p=>p.classList.toggle('active',p.dataset.view===key));document.querySelectorAll('.nav-link[data-page]').forEach(a=>a.classList.toggle('active',a.dataset.page===key));document.querySelector('#pageTitle').textContent=titles[key][0];document.querySelector('#pageDescription').textContent=titles[key][1];window.scrollTo({top:0,behavior:'smooth'});}
+ window.addEventListener('hashchange',show);show();
+})();

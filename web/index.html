@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101d35">
+  <title>MediQueue — Dashboard Antrean</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#dashboard" aria-label="MediQueue beranda">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span class="brand-copy"><b>MediQueue</b><small>QUEUE MANAGEMENT</small></span>
+    </a>
+    <div class="side-caption">WORKSPACE</div>
+    <nav class="side-nav" aria-label="Navigasi utama">
+      <a class="nav-link active" href="#dashboard" data-page="dashboard"><span class="nav-icon">⌂</span><span>Dashboard</span><i></i></a>
+      <a class="nav-link" href="#registration" data-page="registration"><span class="nav-icon">＋</span><span>Pendaftaran</span></a>
+      <a class="nav-link" href="#queue" data-page="queue"><span class="nav-icon">☷</span><span>Antrean pasien</span></a>
+      <a class="nav-link" href="#heap" data-page="heap"><span class="nav-icon">⌘</span><span>Visualisasi Heap</span></a>
+      <a class="nav-link" href="#history" data-page="history"><span class="nav-icon">◷</span><span>Riwayat panggilan</span></a>
+      <a class="nav-link" href="#search" data-page="search"><span class="nav-icon">⌕</span><span>Pencarian pasien</span></a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="system-card"><div class="system-top"><span class="status-dot"></span><b>Sistem berjalan</b></div><p>Backend C terhubung melalui server lokal.</p><span class="system-pill">LOCAL SIMULATION</span></div>
+      <div class="sidebar-foot"><span class="mini-logo">M</span><span><b>MediQueue</b><small>Proyek Struktur Data</small></span></div>
+    </div>
+  </aside>
+
+  <main class="main-content" id="dashboard">
+    <header class="topbar">
+      <div class="topbar-left"><div class="breadcrumb">WORKSPACE <span>/</span> OVERVIEW</div><h1 id="pageTitle">Dashboard</h1><p id="pageDescription">Pantau dan kelola simulasi antrean pasien dalam satu tempat.</p></div>
+      <div class="topbar-right"><div class="server-status"><span class="status-dot"></span><span><b>Server aktif</b><small>Terhubung secara lokal</small></span></div><div class="user-avatar">MQ</div></div>
+    </header>
+
+    <div class="workspace-page active" data-view="dashboard">
+    <section class="hero-banner" aria-label="Sambutan MediQueue">
+      <div class="hero-copy">
+        <div class="hero-eyebrow">SMART QUEUE · ACADEMIC SIMULATION</div>
+        <h2>Antrean lebih tertata,<br><em>layanan lebih terarah.</em></h2>
+        <p>Selamat datang di MediQueue. Kelola simulasi antrean pasien dengan alur yang jelas, tampilan informatif, dan dukungan struktur data Priority Queue.</p>
+        <div class="hero-actions">
+          <a class="hero-btn hero-btn-primary" href="#registration">＋ Daftarkan pasien</a>
+          <a class="hero-btn hero-btn-ghost" href="#queue">Lihat antrean <span>↗</span></a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-orb"></div>
+        <div class="hero-cross">✚</div>
+        <div class="hero-float hero-float-top"><span class="float-icon">⌁</span><span><strong>Priority Queue</strong><small>Min-Heap processing</small></span></div>
+        <div class="hero-float hero-float-bottom"><span class="float-icon">✓</span><span><strong>Organized flow</strong><small>Data tersusun sistematis</small></span></div>
+      </div>
+    </section>
+    <section class="notice-banner"><div class="notice-symbol">i</div><div><b>Mode simulasi akademik</b><p>Angka prioritas 1–5 hanya digunakan untuk demonstrasi algoritma. MediQueue bukan sistem triase atau alat pengambilan keputusan medis.</p></div><span class="notice-label">INFORMASI</span></section>
+    <section class="stats-grid" aria-label="Ringkasan statistik">
+      <article class="stat-card stat-blue"><div class="stat-heading"><span>Total pasien terdaftar</span><span class="stat-icon">▤</span></div><div class="stat-value" id="total">0</div><div class="stat-foot"><span class="stat-foot-dot"></span>Seluruh data pasien</div><div class="stat-decoration">01</div></article>
+      <article class="stat-card stat-orange"><div class="stat-heading"><span>Dalam antrean</span><span class="stat-icon">◷</span></div><div class="stat-value" id="waiting">0</div><div class="stat-foot"><span class="stat-foot-dot"></span>Menunggu pemanggilan</div><div class="stat-decoration">02</div></article>
+      <article class="stat-card stat-green"><div class="stat-heading"><span>Sudah dipanggil</span><span class="stat-icon">✓</span></div><div class="stat-value" id="served">0</div><div class="stat-foot"><span class="stat-foot-dot"></span>Tersimpan dalam riwayat</div><div class="stat-decoration">03</div></article>
+      <article class="stat-card stat-violet"><div class="stat-heading"><span>Prioritas terdepan</span><span class="stat-icon">⌁</span></div><div class="stat-value" id="topPriority">—</div><div class="stat-foot" id="topId">Belum ada antrean</div><div class="stat-decoration">04</div></article>
+    </section>
+      <div class="dashboard-welcome"><div><span class="section-chip">QUICK ACTION</span><h2>Mulai kelola antrean</h2><p>Gunakan pintasan berikut untuk membuka ruang kerja yang dibutuhkan.</p></div><div class="quick-links"><a href="#registration">＋ Pendaftaran pasien</a><a href="#queue">☷ Lihat antrean</a><a href="#history">◷ Riwayat panggilan</a></div></div>
+    </div>
+    <div class="workspace-page" data-view="registration">
+      <div class="page-intro"><span class="section-chip">PATIENT INTAKE</span><h2>Pendaftaran pasien</h2><p>Tambahkan data simulasi pasien ke dalam sistem antrean MediQueue.</p></div>
+      <div id="registrationMount"></div>
+    </div>
+    <div class="workspace-page" data-view="queue">
+      <div class="page-intro"><span class="section-chip">LIVE QUEUE</span><h2>Antrean pasien</h2><p>Pantau daftar pasien yang sedang menunggu dan proses pemanggilan berikutnya.</p></div>
+      <div id="queueMount"></div><div id="callMount"></div>
+    </div>
+    <div class="workspace-page" data-view="heap">
+      <div class="page-intro"><span class="section-chip chip-violet">DATA STRUCTURE</span><h2>Visualisasi Min-Heap</h2><p>Pelajari bagaimana Priority Queue menyimpan dan mengurutkan elemen dalam bentuk complete binary tree.</p></div>
+      <div id="heapMount"></div>
+    </div>
+    <div class="workspace-page" data-view="history">
+      <div class="page-intro"><span class="section-chip chip-green">SERVICE LOG</span><h2>Riwayat pemanggilan</h2><p>Daftar pasien yang telah dipanggil dan disimpan melalui struktur Linked List.</p></div>
+      <div id="historyMount"></div>
+    </div>
+    <div class="workspace-page" data-view="search">
+      <div class="page-intro"><span class="section-chip chip-blue">PATIENT DIRECTORY</span><h2>Pencarian pasien</h2><p>Cari data pasien berdasarkan ID menggunakan Binary Search Tree.</p></div>
+      <div id="searchMount"></div>
+    </div>
+    <div id="workspaceStaging" hidden>
+    <section class="primary-grid">
+      <article class="surface-card registration-card" id="registration">
+        <div class="section-heading"><div class="heading-icon blue-icon">＋</div><div><h2>Pendaftaran pasien</h2><p>Masukkan informasi untuk menambahkan pasien ke antrean.</p></div><span class="section-chip">FORM INPUT</span></div>
+        <form id="patientForm">
+          <div class="form-grid">
+            <label>ID pasien<input id="patientId" maxlength="15" placeholder="Contoh: P001" required></label>
+            <label>Nama lengkap<input id="patientName" maxlength="59" placeholder="Masukkan nama pasien" required></label>
+            <label>Usia <span class="optional-note">(tahun)</span><input id="patientAge" type="number" min="0" max="120" placeholder="Contoh: 25" required></label>
+            <label>Prioritas simulasi<select id="patientPriority" required><option value="">Pilih tingkat prioritas</option><option value="1">1 — Didahulukan pertama</option><option value="2">2 — Urutan kedua</option><option value="3">3 — Urutan ketiga</option><option value="4">4 — Urutan keempat</option><option value="5">5 — Urutan kelima</option></select></label>
+          </div>
+          <div class="form-bottom"><p><span class="info-mini">i</span> Angka lebih kecil berada lebih depan. Jika sama, pasien yang datang lebih awal didahulukan.</p><button class="btn btn-primary" type="submit"><span>＋</span> Daftarkan pasien</button></div>
+        </form>
+        <div id="formMessage" class="message" aria-live="polite"></div>
+      </article>
+
+      <article class="surface-card call-card">
+        <div class="section-heading"><div class="heading-icon violet-icon">↗</div><div><h2>Pemanggilan pasien</h2><p>Proses pasien terdepan dalam antrean.</p></div><span class="section-chip chip-violet">MIN-HEAP</span></div>
+        <div class="call-feature"><div class="call-orbit"><span>↗</span></div><div><b>Siap memanggil berikutnya?</b><p>Sistem akan mengambil elemen dengan nilai prioritas terkecil dari Min-Heap.</p></div></div>
+        <button id="callNext" class="btn btn-call">Panggil pasien berikutnya <span>→</span></button>
+        <div id="callMessage" class="message" aria-live="polite"></div>
+        <div class="call-note"><span class="call-note-line"></span>Urutan diproses otomatis oleh struktur data.</div>
+      </article>
+    </section>
+
+    <section class="surface-card queue-card" id="queue">
+      <div class="section-heading queue-heading"><div class="heading-icon blue-icon">☷</div><div><h2>Antrean pasien</h2><p>Daftar pasien yang sedang menunggu pemanggilan.</p></div><div class="heading-actions"><span class="section-chip">PRIORITY QUEUE</span><button class="btn btn-quiet" id="refresh">↻ <span>Perbarui</span></button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>NO.</th><th>ID PASIEN</th><th>NAMA PASIEN</th><th>USIA</th><th>PRIORITAS</th><th>WAKTU DAFTAR</th><th>STATUS</th></tr></thead><tbody id="queueBody"><tr><td colspan="7" class="empty">Memuat data antrean...</td></tr></tbody></table></div>
+      <div class="table-footer"><span id="queueCount">0 pasien menunggu</span><span>Diurutkan oleh <b>Min-Heap</b><span class="footer-separator">•</span>Prioritas lalu waktu kedatangan</span></div>
+    </section>
+
+    <section class="surface-card heap-card">
+      <div class="section-heading"><div class="heading-icon violet-icon">⌘</div><div><h2>Visualisasi Min-Heap</h2><p>Representasi struktur antrean dalam bentuk complete binary tree.</p></div><span class="section-chip chip-violet">HEAP TREE</span></div>
+      <div id="heapView" class="heap-view"><div class="empty">Heap masih kosong.</div></div>
+      <div class="heap-explainer"><span class="legend-dot"></span>Akar (root) berisi pasien yang berada paling depan dalam antrean.</div>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="surface-card history-card" id="history">
+        <div class="section-heading"><div class="heading-icon green-icon">◷</div><div><h2>Riwayat pemanggilan</h2><p>Daftar pasien yang telah dipanggil.</p></div><span class="section-chip chip-green">LINKED LIST</span></div>
+        <div id="historyList" class="history-list"><div class="empty">Belum ada riwayat pemanggilan.</div></div>
+      </article>
+      <article class="surface-card search-card">
+        <div class="section-heading"><div class="heading-icon blue-icon">⌕</div><div><h2>Pencarian pasien</h2><p>Temukan data pasien berdasarkan ID.</p></div><span class="section-chip chip-blue">BST</span></div>
+        <form id="searchForm" class="search-form"><input id="searchId" placeholder="Masukkan ID pasien, mis. P001" required><button class="btn btn-primary">Cari pasien <span>→</span></button></form>
+        <div id="searchResult" class="search-result">Hasil pencarian akan ditampilkan di sini.</div>
+        <div class="search-hint"><span class="info-mini">i</span> Pencarian data menggunakan Binary Search Tree.</div>
+      </article>
+    </section>
+
+    </div>
+    <footer class="page-footer"><span>© 2026 <b>MediQueue</b></span><span>Proyek Struktur Data dan Algoritma <i>•</i> Backend C <i>•</i> Web Interface</span></footer>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
